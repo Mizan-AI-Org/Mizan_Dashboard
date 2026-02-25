@@ -1,8 +1,67 @@
 @import "tailwindcss";
 
+/* ── Light mode (default) ── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f7f8fa;
+  --background-nav: rgba(255, 255, 255, 0.92);
+  --foreground: #1a1a2e;
+  --card: #ffffff;
+  --card-hover: #f9fafb;
+  --card-border: rgba(0, 0, 0, 0.07);
+  --card-border-hover: rgba(0, 0, 0, 0.13);
+  --surface: #f3f4f6;
+  --accent: #10b981;
+  --accent-dim: rgba(16, 185, 129, 0.1);
+  --muted: #6b7280;
+  --divider: rgba(0, 0, 0, 0.06);
+  --skeleton: rgba(0, 0, 0, 0.06);
+  --text-primary: #111827;
+  --text-secondary: #374151;
+  --text-tertiary: #6b7280;
+  --text-quaternary: #9ca3af;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --tooltip-bg: #ffffff;
+  --tooltip-border: rgba(0, 0, 0, 0.1);
+  --tooltip-text: #374151;
+  --tooltip-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  --grid-stroke: rgba(0, 0, 0, 0.06);
+  --axis-fill: #6b7280;
+  --legend-color: #6b7280;
+  --scrollbar-thumb: rgba(0, 0, 0, 0.12);
+  --scrollbar-hover: rgba(0, 0, 0, 0.2);
+}
+
+/* ── Dark mode ── */
+[data-theme="dark"] {
+  --background: #0f1117;
+  --background-nav: rgba(15, 17, 23, 0.92);
+  --foreground: #e4e6eb;
+  --card: #1c1f2e;
+  --card-hover: #222639;
+  --card-border: rgba(255, 255, 255, 0.07);
+  --card-border-hover: rgba(255, 255, 255, 0.13);
+  --surface: #181b27;
+  --accent: #10b981;
+  --accent-dim: rgba(16, 185, 129, 0.12);
+  --muted: #71717a;
+  --divider: rgba(255, 255, 255, 0.06);
+  --skeleton: rgba(255, 255, 255, 0.05);
+  --text-primary: #f9fafb;
+  --text-secondary: #d1d5db;
+  --text-tertiary: #9ca3af;
+  --text-quaternary: #6b7280;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.35);
+  --tooltip-bg: #1c1f2e;
+  --tooltip-border: rgba(255, 255, 255, 0.08);
+  --tooltip-text: #e4e6eb;
+  --tooltip-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --grid-stroke: rgba(255, 255, 255, 0.04);
+  --axis-fill: #6b7280;
+  --legend-color: #71717a;
+  --scrollbar-thumb: rgba(255, 255, 255, 0.08);
+  --scrollbar-hover: rgba(255, 255, 255, 0.16);
 }
 
 @theme inline {
@@ -12,15 +71,33 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-hover);
+}
+
+.recharts-responsive-container {
+  min-height: 0;
 }
