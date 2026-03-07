@@ -15,11 +15,10 @@ export default function Home() {
         />
         <div className="space-y-2">
           <h1 className="text-[28px] font-bold tracking-tight text-[var(--text-primary)]">
-            Mizan Command Center
+            Mizan AI Command Center
           </h1>
           <p className="text-[14px] leading-relaxed text-[var(--text-tertiary)]">
-            Internal analytics dashboard connected to your live AWS RDS
-            instance. View operational metrics, revenue, and AI readiness.
+            This is our internal operational and investor dashboard.
           </p>
         </div>
         <Link

@@ -14,8 +14,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Mizan Command Center",
+  title: "Mizan AI Command Center",
   description: "Internal operational and investor dashboard for Mizan AI.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Mizan AI",
+  },
 };
 
 const THEME_SCRIPT = `

@@ -4,7 +4,7 @@ import Image from "next/image";
 import { ThemeToggle } from "@/components/dashboard/theme-toggle";
 
 export const metadata = {
-  title: "Mizan Command Center",
+  title: "Mizan AI",
   description: "Internal operational and investor dashboard for Mizan AI.",
 };
 
@@ -20,10 +20,11 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               width={30}
               height={30}
               priority
+              className="rounded-md"
             />
             <div className="flex flex-col">
               <span className="text-[14px] font-semibold tracking-tight text-[var(--text-primary)]">
-                Mizan Command Center
+                Mizan AI
               </span>
               <span className="text-[10px] font-medium uppercase tracking-widest text-[var(--text-quaternary)]">
                 Analytics Dashboard

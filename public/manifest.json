@@ -1,0 +1,21 @@
+{
+  "name": "Mizan AI Command Center",
+  "short_name": "Mizan AI",
+  "description": "Internal operational and investor dashboard for Mizan AI.",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#0A0A0A",
+  "theme_color": "#12B76A",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
