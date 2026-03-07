@@ -89,10 +89,14 @@ export async function fetchExecutiveOverview(): Promise<ExecutiveOverviewRow> {
             case
               when count(*) = 0 then null
               else
-                sum(case when status = 'completed' then 1 else 0 end)::float
+                sum(case when upper(status) = 'COMPLETED' then 1 else 0 end)::float
                 / count(*)
             end
-          from checklist_executions
+          from (
+            select status, created_at from checklist_executions
+            union all
+            select status, created_at from shift_checklist_progress
+          ) combined_checklists
           where created_at >= date_trunc('month', now())
         ) as checklist_completion_rate,
 
@@ -171,10 +175,14 @@ export async function fetchChecklistCompletionSeries(): Promise<
         case
           when count(*) = 0 then null
           else
-            sum(case when status = 'completed' then 1 else 0 end)::float
+            sum(case when upper(status) = 'COMPLETED' then 1 else 0 end)::float
             / count(*)
         end as completion_rate
-      from checklist_executions
+      from (
+        select status, created_at from checklist_executions
+        union all
+        select status, created_at from shift_checklist_progress
+      ) combined_checklists
       group by 1
       order by bucket
       limit 26;
@@ -288,12 +296,15 @@ export async function fetchTasksPerShiftSeries(): Promise<
         date_trunc('week', s.shift_date)::date::text as bucket,
         case
           when count(distinct s.id) = 0 then null
-          else count(ce.id)::float / count(distinct s.id)
+          else count(combined.id)::float / count(distinct s.id)
         end as avg_tasks_per_shift
       from assigned_shifts s
-      left join checklist_executions ce
-        on ce.assigned_shift_id = s.id
-        and ce.status = 'completed'
+      left join (
+        select id, assigned_shift_id from checklist_executions where upper(status) = 'COMPLETED'
+        union all
+        select id, shift_id as assigned_shift_id from shift_checklist_progress where upper(status) = 'COMPLETED'
+      ) combined
+        on combined.assigned_shift_id = s.id
       group by 1
       order by bucket
       limit 26;
