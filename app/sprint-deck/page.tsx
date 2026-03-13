@@ -272,7 +272,7 @@ function Slide1() {
                 <tbody className="text-slate-800 font-semibold bg-white">
                   <tr className="border-t border-slate-100 hover:bg-slate-50/50"><td className="py-2 sm:py-4 px-2 sm:px-4 font-extrabold">TAM</td><td className="py-2 sm:py-4 px-2 sm:px-4">~2.9M</td><td className="py-2 sm:py-4 px-2 sm:px-4 text-right font-extrabold text-emerald-600 text-base sm:text-xl">€3.6B</td></tr>
                   <tr className="border-t border-slate-100 hover:bg-slate-50/50"><td className="py-2 sm:py-4 px-2 sm:px-4 font-extrabold">SAM</td><td className="py-2 sm:py-4 px-2 sm:px-4">~1.0M</td><td className="py-2 sm:py-4 px-2 sm:px-4 text-right font-extrabold text-emerald-600 text-base sm:text-xl">€1.2B</td></tr>
-                  <tr className="border-t border-slate-100 hover:bg-slate-50/50"><td className="py-2 sm:py-4 px-2 sm:px-4 font-extrabold">SOM</td><td className="py-2 sm:py-4 px-2 sm:px-4">~60,800</td><td className="py-2 sm:py-4 px-2 sm:px-4 text-right font-extrabold text-emerald-600 text-base sm:text-xl">€35.5M</td></tr>
+                  <tr className="border-t border-slate-100 hover:bg-slate-50/50"><td className="py-2 sm:py-4 px-2 sm:px-4 font-extrabold">SOM</td><td className="py-2 sm:py-4 px-2 sm:px-4">~30,000</td><td className="py-2 sm:py-4 px-2 sm:px-4 text-right font-extrabold text-emerald-600 text-base sm:text-xl">€36M</td></tr>
                 </tbody>
               </table>
             </div>
