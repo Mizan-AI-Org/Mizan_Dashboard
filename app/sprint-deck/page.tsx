@@ -251,7 +251,7 @@ function Slide1() {
             <ul className="text-slate-800 text-base sm:text-lg font-medium space-y-1.5 leading-relaxed break-words">
               <li><strong className="font-extrabold">Restaurant crisis:</strong> High turnover, seasonal activity, lower margins</li>
               <li><strong className="font-extrabold">Digital transformation:</strong> POS adopted, ops still manual; Covid accelerated digitization</li>
-              <li><strong className="font-extrabold">AI enables insights:</strong> Detect patterns, optimize staff, surface issues — software as assistant manager</li>
+              <li><strong className="font-extrabold">AI enables insights:</strong> Detect operational patterns & uncover insights. Optimize staff allocation & reduce inefficiencies</li>
             </ul>
           </section>
         </div>
@@ -272,22 +272,24 @@ function Slide1() {
                 <tbody className="text-slate-800 font-semibold bg-white">
                   <tr className="border-t border-slate-100 hover:bg-slate-50/50"><td className="py-2 sm:py-4 px-2 sm:px-4 font-extrabold">TAM</td><td className="py-2 sm:py-4 px-2 sm:px-4">~2.5M</td><td className="py-2 sm:py-4 px-2 sm:px-4 text-right font-extrabold text-emerald-600 text-base sm:text-xl">€3.0B</td></tr>
                   <tr className="border-t border-slate-100 hover:bg-slate-50/50"><td className="py-2 sm:py-4 px-2 sm:px-4 font-extrabold">SAM</td><td className="py-2 sm:py-4 px-2 sm:px-4">~1.0M</td><td className="py-2 sm:py-4 px-2 sm:px-4 text-right font-extrabold text-emerald-600 text-base sm:text-xl">€1.2B</td></tr>
-                  <tr className="border-t border-slate-100 hover:bg-slate-50/50"><td className="py-2 sm:py-4 px-2 sm:px-4 font-extrabold">SOM</td><td className="py-2 sm:py-4 px-2 sm:px-4">~127,000</td><td className="py-2 sm:py-4 px-2 sm:px-4 text-right font-extrabold text-emerald-600 text-base sm:text-xl">€152M</td></tr>
+                  <tr className="border-t border-slate-100 hover:bg-slate-50/50"><td className="py-2 sm:py-4 px-2 sm:px-4 font-extrabold">SOM</td><td className="py-2 sm:py-4 px-2 sm:px-4">~60,800</td><td className="py-2 sm:py-4 px-2 sm:px-4 text-right font-extrabold text-emerald-600 text-base sm:text-xl">$72.96M</td></tr>
                 </tbody>
               </table>
             </div>
-            <p className="text-slate-600 text-[11px] sm:text-xs mt-2">TAM: US + Europe + MENA + Morocco. SAM: independent/small groups, 10+ employees. Target: 1% Year 1 → 7% Year 5. Market growth: 16% CAGR.</p>
+            <p className="text-slate-600 text-[11px] sm:text-xs mt-2">TAM: US + Europe + MENA + Morocco. SAM: independent/small groups, 10+ employees. Target: 1% of SAM. Market growth: 16% CAGR.</p>
           </section>
           <section className="p-4 sm:p-6 rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200/80 shadow-sm min-w-0">
             <h3 className="text-xs sm:text-sm font-extrabold text-emerald-700 uppercase tracking-widest mb-2 sm:mb-3">Mandatory Clarity Sentence</h3>
             <p className="text-slate-900 text-base sm:text-lg font-semibold leading-relaxed italic break-words">
-              Mizan is building an AI-powered platform that centralizes restaurant management, allowing operators to
-              coordinate teams, oversee daily operations, and access key business data from one place.
+            Mizan is an AI-powered operational platform designed to centralize the management of restaurant operations. 
+            It brings together team coordination, operational workflows, and business data into a single environment, 
+            while connecting with existing systems such as POS and reservation platforms into one unified hub.
+
               <br /><br />
               We are targeting
-              restaurants across the US, Europe, MENA, and Morocco- a TAM of ~€3B (2.5M restaurants) and SAM of ~€1.2B
+              restaurants across the US, Europe and MENA ( starting with Morocco) - a TAM of ~€3B (2.5M restaurants) and SAM of ~€1.2B
               (1M independent/small groups with 10+ employees). The restaurant management software market grows at ~16%
-              annually. Mizan aims to capture 1% of SAM in Year 1, scaling to 7% by Year 5 (~€152M ARR).
+              annually. Mizan aims to capture 1% of SAM (~$72.96M ARR).
             </p>
           </section>
         </div>
@@ -337,14 +339,17 @@ function Slide2() {
           </section>
           <section className="rounded-2xl p-4 sm:p-5 bg-slate-50/80 border border-slate-100 min-w-0">
             <h3 className="text-xs sm:text-sm font-extrabold text-emerald-600 uppercase tracking-widest mb-2 sm:mb-3">Demo & Roadmap</h3>
-            <p className="text-slate-700 text-base sm:text-lg font-semibold mb-2 sm:mb-3 break-words">Focus: Why this product meaningfully outperforms alternatives.</p>
-            <p className="text-slate-800 text-base sm:text-lg font-medium leading-relaxed break-words">
-              <strong className="font-extrabold">Demo:</strong> Scheduling, tasks, incidents, AI assistant, WhatsApp delivery.
-            </p>
-            <p className="text-slate-800 text-base sm:text-lg font-medium leading-relaxed mt-3 break-words">
-              <strong className="font-extrabold">Roadmap (12–24 mo):</strong> AI enhancements, multi-location dashboards, deeper POS integrations,
-              expansion into new markets.
-            </p>
+            <div className="rounded-lg overflow-hidden bg-slate-200/50 aspect-video max-h-90 w-full">
+              <video
+                src="/mizan_ad.mp4"
+                autoPlay
+                playsInline
+                muted
+                loop
+                controls
+                className="w-full h-full object-cover"
+              />
+            </div>
           </section>
         </div>
       </div>
@@ -377,9 +382,9 @@ function Slide3() {
             <ul className="text-slate-800 text-base sm:text-lg font-medium space-y-1.5 leading-relaxed break-words">
               <li><strong className="font-extrabold">7Shifts</strong> (~$70M/yr) — scheduling, labor</li>
               <li><strong className="font-extrabold">Jolt</strong> — checklists, audits, incidents, food safety</li>
-              <li><strong className="font-extrabold">Zavo</strong> (YC) — POS, payments, agents for reservation & marketing</li>
-              <li><strong className="font-extrabold">Blent AI</strong> — hospitality data intelligence platform</li>
-              <li><strong className="font-extrabold">5-Out</strong> — all-in-one: incidents, data, ops, POS, AI</li>
+              <li><strong className="font-extrabold">Zavo</strong> (YC25) — POS, payments, agents for reservation & marketing</li>
+              <li><strong className="font-extrabold">Blent AI</strong> (660k/yr) — hospitality data intelligence platform</li>
+              <li><strong className="font-extrabold">5-Out</strong> (~$1M–$3M/yr) — all-in-one: incidents, data, ops, POS, AI</li>
             </ul>
           </section>
           <section className="rounded-2xl p-4 sm:p-5 bg-slate-50/80 border border-slate-100 min-w-0">
@@ -397,9 +402,8 @@ function Slide3() {
             <h3 className="text-xs sm:text-sm font-extrabold text-emerald-600 uppercase tracking-widest mb-2 sm:mb-3">Defensibility (5–10 Years)</h3>
             <ul className="text-slate-800 text-base sm:text-lg font-medium space-y-1.5 leading-relaxed break-words">
               <li><strong className="font-extrabold">Operational data layer:</strong> Workflows, staffing, performance</li>
-              <li><strong className="font-extrabold">Embedded workflows:</strong> Switching costs increase</li>
-              <li><strong className="font-extrabold">Integration ecosystem:</strong> Center of restaurant software stack</li>
-              <li><strong className="font-extrabold">AI loop:</strong> More restaurants → more data → better AI → stronger differentiation</li>
+              <li><strong className="font-extrabold">Integration ecosystem:</strong> By becoming the operational layer connecting POS, reservations and staff tools, Mizan becomes the single source of truth for restaurants</li>
+              <li><strong className="font-extrabold">AI loop (Stickiness):</strong> More restaurants → more data → better AI Analytics → stronger differentiation</li>
             </ul>
           </section>
           <section className="p-4 sm:p-6 rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200/80 shadow-sm min-w-0">
@@ -409,12 +413,9 @@ function Slide3() {
               Performance comes from operational execution, not from the most advanced POS. Mizan is built around this core belief.
             </p>
             <p className="text-slate-800 text-base sm:text-lg font-semibold mt-3 break-words">
-              <strong className="font-extrabold">Moats:</strong> Technology, distribution, data. <strong className="font-extrabold">Barriers:</strong> Restaurant management know-how.
+              <strong className="font-extrabold">Moats:</strong> Technology, distribution, data.
             </p>
           </section>
-          <p className="text-slate-700 text-sm sm:text-base font-semibold italic leading-relaxed break-words">
-            Defensibility is about sustainable competitive advantage, not just current superiority.
-          </p>
         </div>
       </div>
     </Card>
