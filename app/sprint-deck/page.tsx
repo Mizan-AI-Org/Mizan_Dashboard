@@ -270,9 +270,9 @@ function Slide1() {
                   </tr>
                 </thead>
                 <tbody className="text-slate-800 font-semibold bg-white">
-                  <tr className="border-t border-slate-100 hover:bg-slate-50/50"><td className="py-2 sm:py-4 px-2 sm:px-4 font-extrabold">TAM</td><td className="py-2 sm:py-4 px-2 sm:px-4">~2.5M</td><td className="py-2 sm:py-4 px-2 sm:px-4 text-right font-extrabold text-emerald-600 text-base sm:text-xl">€3.0B</td></tr>
+                  <tr className="border-t border-slate-100 hover:bg-slate-50/50"><td className="py-2 sm:py-4 px-2 sm:px-4 font-extrabold">TAM</td><td className="py-2 sm:py-4 px-2 sm:px-4">~2.9M</td><td className="py-2 sm:py-4 px-2 sm:px-4 text-right font-extrabold text-emerald-600 text-base sm:text-xl">€3.6B</td></tr>
                   <tr className="border-t border-slate-100 hover:bg-slate-50/50"><td className="py-2 sm:py-4 px-2 sm:px-4 font-extrabold">SAM</td><td className="py-2 sm:py-4 px-2 sm:px-4">~1.0M</td><td className="py-2 sm:py-4 px-2 sm:px-4 text-right font-extrabold text-emerald-600 text-base sm:text-xl">€1.2B</td></tr>
-                  <tr className="border-t border-slate-100 hover:bg-slate-50/50"><td className="py-2 sm:py-4 px-2 sm:px-4 font-extrabold">SOM</td><td className="py-2 sm:py-4 px-2 sm:px-4">~60,800</td><td className="py-2 sm:py-4 px-2 sm:px-4 text-right font-extrabold text-emerald-600 text-base sm:text-xl">$72.96M</td></tr>
+                  <tr className="border-t border-slate-100 hover:bg-slate-50/50"><td className="py-2 sm:py-4 px-2 sm:px-4 font-extrabold">SOM</td><td className="py-2 sm:py-4 px-2 sm:px-4">~60,800</td><td className="py-2 sm:py-4 px-2 sm:px-4 text-right font-extrabold text-emerald-600 text-base sm:text-xl">€35.5M</td></tr>
                 </tbody>
               </table>
             </div>
@@ -287,9 +287,9 @@ function Slide1() {
 
               <br /><br />
               We are targeting
-              restaurants across the US, Europe and MENA ( starting with Morocco) - a TAM of ~€3B (2.5M restaurants) and SAM of ~€1.2B
+              restaurants across the US, Europe and MENA ( starting with Morocco) - a TAM of ~€3.6B (2.9M restaurants) and SAM of ~€1.2B
               (1M independent/small groups with 10+ employees). The restaurant management software market grows at ~16%
-              annually. Mizan aims to capture 1% of SAM (~$72.96M ARR).
+              annually. Mizan aims to capture 1% of SAM (~€35.5M ARR).
             </p>
           </section>
         </div>
