@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "icons.duckduckgo.com", pathname: "/**" },
       { protocol: "https", hostname: "cdn.simpleicons.org", pathname: "/**" },
       { protocol: "https", hostname: "upload.wikimedia.org", pathname: "/**" },
+      { protocol: "https", hostname: "images.unsplash.com", pathname: "/**" },
     ],
   },
 };

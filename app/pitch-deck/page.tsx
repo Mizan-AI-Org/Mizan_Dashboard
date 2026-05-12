@@ -3,11 +3,11 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, ArrowRight, FileSpreadsheet, MessageCircle, ClipboardList, Smartphone, Monitor, Mic, LayoutGrid, Sparkles, Maximize2, Minimize2, UserCog, Users, Building2, Target, Megaphone } from "lucide-react";
+import { ChevronLeft, ChevronRight, ArrowRight, FileSpreadsheet, MessageCircle, ClipboardList, Smartphone, Monitor, Mic, LayoutGrid, Sparkles, Maximize2, Minimize2, UserCog, Users, Building2, Target, Megaphone, BarChart3, Award, Quote } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
 import ArchitectureDiagram from "./ArchitectureDiagram";
 
-const SLIDE_COUNT = 17;
+const SLIDE_COUNT = 20;
 
 // XchangeBox-style: background position per layout for better image visibility
 const SLIDE_BG_POSITION: Record<string, string> = {
@@ -21,7 +21,7 @@ const SLIDE_BG_POSITION: Record<string, string> = {
 
 // Per-slide overrides (e.g. to crop out watermarks or align a specific image)
 const SLIDE_BG_POSITION_OVERRIDE: Record<number, string> = {
-  14: "70% center", // Founders image: keep faces visible on the right, content stays left
+  15: "70% center", // Founders image: keep faces visible on the right, content stays left
 };
 
 // Layout types: hero | split-right | split-left | bottom-panel | card-center | vignette
@@ -29,20 +29,23 @@ const SLIDE_LAYOUTS: Record<number, string> = {
   0: "hero",
   1: "split-left",
   2: "vignette",
-  3: "split-left",
-  4: "bottom-panel",
-  5: "split-right",
+  3: "vignette", // Market Opportunity (NEW)
+  4: "split-left",
+  5: "bottom-panel",
   6: "split-right",
-  7: "split-left",
+  7: "split-right",
   8: "split-left",
-  9: "vignette",
-  10: "split-left", // Competitive Differentiation
-  11: "split-right",
-  12: "bottom-panel",
-  13: "card-center",
-  14: "split-left",
-  15: "vignette",
-  16: "hero",
+  9: "split-left",
+  10: "vignette",
+  11: "split-left",
+  12: "split-right",
+  13: "bottom-panel",
+  14: "card-center",
+  15: "split-left",
+  16: "vignette",
+  17: "vignette", // Vision (NEW)
+  18: "vignette", // Social Proof (NEW)
+  19: "hero",
 };
 
 // Beautiful restaurant/hospitality background images (Unsplash)
@@ -50,20 +53,23 @@ const SLIDE_BACKGROUNDS: Record<number, string> = {
   0: "/pitch-deck/hero-bg.png",
   1: "/pitch-deck/problem-bg.png",
   2: "/pitch-deck/moroccan-restaurant.png",
-  3: "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=1920&q=80",
-  4: "/pitch-deck/moroccan-restaurant.png",
-  5: "/pitch-deck/platform-demo-bg.png",
-  6: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1920&q=80",
-  7: "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=1920&q=80",
-  8: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=1920&q=80",
-  9: "/pitch-deck/competitive-landscape.png",
-  10: "/pitch-deck/differentiation-bg.png",
-  11: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1920&q=80",
-  12: "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=1920&q=80",
-  13: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1920&q=80",
-  14: "/pitch-deck/image.png",
-  15: "https://images.unsplash.com/photo-1556740758-90de374c12ad?w=1920&q=80",
-  16: "/pitch-deck/thankyou-bg.png",
+  3: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1920&q=80",
+  4: "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=1920&q=80",
+  5: "/pitch-deck/moroccan-restaurant.png",
+  6: "/pitch-deck/platform-demo-bg.png",
+  7: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1920&q=80",
+  8: "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=1920&q=80",
+  9: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=1920&q=80",
+  10: "/pitch-deck/competitive-landscape.png",
+  11: "/pitch-deck/differentiation-bg.png",
+  12: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1920&q=80",
+  13: "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=1920&q=80",
+  14: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1920&q=80",
+  15: "/pitch-deck/image.png",
+  16: "https://images.unsplash.com/photo-1556740758-90de374c12ad?w=1920&q=80",
+  17: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1920&q=80",
+  18: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1920&q=80",
+  19: "/pitch-deck/thankyou-bg.png",
 };
 
 function SlideLayout({
@@ -110,33 +116,36 @@ function SlideWithBackground({
       : direction === "prev"
         ? "pitch-slide-enter-prev"
         : "pitch-slide-enter-none";
+  const isPriority = slideIndex <= 2;
 
   return (
     <div key={slideIndex} className={`absolute inset-0 ${animClass}`}>
-      {/* Slide 14: use Next/Image for sharper background; others use CSS background */}
-      {slideIndex === 14 && bgUrl ? (
-        <>
+      {/* All backgrounds use next/image for optimization (WebP, responsive sizing) */}
+      {bgUrl ? (
+        <div className="absolute inset-0">
+          {/* Placeholder prevents blank white while heavy images load */}
+          <div
+            className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900"
+            aria-hidden
+          />
           <Image
             src={bgUrl}
             alt=""
             fill
-            priority
-            quality={90}
-            className="object-cover object-center"
-            style={{ objectPosition: "center center" }}
+            priority={isPriority}
+            quality={75}
+            sizes="100vw"
+            className="object-cover"
+            style={{
+              objectPosition: bgPosition.replace(/\s+/g, " ").trim() || "center",
+            }}
           />
-        </>
+        </div>
       ) : (
-        <div
-          className="absolute inset-0 bg-cover bg-no-repeat"
-          style={{
-            backgroundImage: bgUrl ? `url(${bgUrl})` : undefined,
-            backgroundPosition: bgPosition,
-          }}
-        />
+        <div className="absolute inset-0 bg-slate-800" />
       )}
       <div className="absolute inset-0" style={{ background: overlay }} />
-      <div className={`relative z-10 flex flex-col min-h-full py-10 px-6 ${contentClass}${slideIndex === 14 ? " justify-end pb-0 pt-0" : ""}`}>
+      <div className={`relative z-10 flex flex-col min-h-full py-10 px-6 ${contentClass}${slideIndex === 15 ? " justify-end pb-0 pt-0" : ""}`}>
         <ContentWrapper layout={layout} slideIndex={slideIndex}>
           {children}
         </ContentWrapper>
@@ -150,40 +159,44 @@ function getOverlayForLayout(layout: string, isDark: boolean, slideIndex?: numbe
   if (slideIndex === 1) {
     return "linear-gradient(to right, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.25) 38%, transparent 58%)";
   }
-  // Slide 2 (Root and Magnitude): light vignette so Moroccan restaurant image is prominent
+  // Slide 2 (Root and Magnitude): subtle center darken so cards read clearly; edges keep image visible
   if (slideIndex === 2) {
-    return "radial-gradient(ellipse at center, transparent 0%, transparent 45%, rgba(0,0,0,0.25) 100%)";
+    return "radial-gradient(ellipse 85% 80% at 50% 50%, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.2) 50%, transparent 85%)";
   }
-  // Slide 4 (How It Works): stronger bottom gradient so content reads on busy Moroccan background
-  if (slideIndex === 4) {
+  // Slide 3 (Market Opportunity): center darken so TAM/SAM/SOM cards read clearly
+  if (slideIndex === 3) {
+    return "radial-gradient(ellipse 90% 85% at 50% 50%, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.25) 50%, transparent 90%)";
+  }
+  // Slide 5 (How It Works): stronger bottom gradient so content reads on busy Moroccan background
+  if (slideIndex === 5) {
     return "linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 30%, rgba(0,0,0,0.15) 55%, transparent 75%)";
   }
-  // Slide 5 (Platform Demo): split-right - darken right for content, image visible on left
-  if (slideIndex === 5) {
+  // Slide 6 (Platform Demo): split-right - darken right for content, image visible on left
+  if (slideIndex === 6) {
     return "linear-gradient(to left, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 40%, transparent 60%)";
   }
-  // Slide 7 (Traction): split-left - darken left for content, image visible on right
-  if (slideIndex === 7) {
+  // Slide 8 (Traction): split-left - darken left for content, image visible on right
+  if (slideIndex === 8) {
     return "linear-gradient(to right, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 40%, transparent 60%)";
   }
-  // Slide 9 (Competitive Landscape): center darken for table readability
-  if (slideIndex === 9) {
+  // Slide 10 (Competitive Landscape): center darken for table readability
+  if (slideIndex === 10) {
     return "linear-gradient(135deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.55) 100%)";
   }
-  // Slide 10 (Competitive Differentiation): split-left - darken left for content
-  if (slideIndex === 10) {
+  // Slide 11 (Competitive Differentiation): split-left - darken left for content
+  if (slideIndex === 11) {
     return "linear-gradient(to right, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.35) 45%, transparent 65%)";
   }
-  // Slide 14 (Human Capital): light gradient at bottom only so card stays readable
-  if (slideIndex === 14) {
+  // Slide 15 (Human Capital): light gradient at bottom only so card stays readable
+  if (slideIndex === 15) {
     return "linear-gradient(to top, rgba(0,0,0,0.35) 0%, transparent 28%)";
   }
-  // Slide 15 (Why Now?): darken left for text legibility; keep right side of image visible
-  if (slideIndex === 15) {
+  // Slide 16 (Why Now?): darken left for text legibility; keep right side of image visible
+  if (slideIndex === 16) {
     return "linear-gradient(to right, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.4) 42%, transparent 62%)";
   }
-  // Slide 16 (Thank You): darken center so title and CTA card are readable
-  if (slideIndex === 16) {
+  // Slide 19 (Thank You): darken center so title and CTA card are readable
+  if (slideIndex === 19) {
     return "radial-gradient(ellipse 80% 70% at 50% 50%, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.35) 50%, transparent 100%)";
   }
   const light = {
@@ -216,7 +229,7 @@ function getOverlayForLayout(layout: string, isDark: boolean, slideIndex?: numbe
 }
 
 function getContentClassForLayout(layout: string, slideIndex?: number): string {
-  if (slideIndex === 15) return "items-center justify-start";
+  if (slideIndex === 16) return "items-center justify-start";
   const classes: Record<string, string> = {
     hero: "items-center justify-center text-center",
     "split-right": "items-center justify-end",
@@ -245,56 +258,67 @@ function ContentWrapper({
       </div>
     );
   }
-  // Slide 4 (How It Works): transparent wrapper, positioned left
+  // Slide 4 (The Solution): premium floating card with emerald accent
   if (slideIndex === 4) {
+    return (
+      <div className="w-full max-w-2xl mr-auto ml-6 lg:ml-10 self-start">
+        <div className="relative overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)]/98 backdrop-blur-xl shadow-2xl shadow-black/10 p-6 md:p-8 ring-1 ring-white/5">
+          <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-emerald-500 to-emerald-600" />
+          {children}
+        </div>
+      </div>
+    );
+  }
+  // Slide 5 (How It Works): transparent wrapper, positioned left
+  if (slideIndex === 5) {
     return (
       <div className="w-full max-w-4xl mr-auto ml-6 lg:ml-10 mb-6 lg:mb-10 self-start">
         {children}
       </div>
     );
   }
-  // Slide 5 (Platform Demo): content panel on right, no opaque wrapper
-  if (slideIndex === 5) {
+  // Slide 6 (Platform Demo): content panel on right, no opaque wrapper
+  if (slideIndex === 6) {
     return (
       <div className="w-full max-w-xl ml-auto mr-6 lg:mr-10">
         {children}
       </div>
     );
   }
-  // Slide 6 (Business Model): wider so text flows naturally
-  if (slideIndex === 6) {
+  // Slide 7 (Business Model): wider so text flows naturally
+  if (slideIndex === 7) {
     return (
       <div className="w-full max-w-5xl ml-auto mr-6 lg:mr-10">
         {children}
       </div>
     );
   }
-  // Slide 7 (Traction): content far left
-  if (slideIndex === 7) {
+  // Slide 8 (Traction): content far left
+  if (slideIndex === 8) {
     return (
       <div className="w-full max-w-xl mr-auto ml-6 lg:ml-10 self-center">
         {children}
       </div>
     );
   }
-  // Slide 9 (Competitive Landscape): wider for larger table and logos
-  if (slideIndex === 9) {
+  // Slide 10 (Competitive Landscape): wider for larger table and logos
+  if (slideIndex === 10) {
     return (
       <div className="w-full max-w-5xl mx-auto px-2">
         {children}
       </div>
     );
   }
-  // Slide 10 (Competitive Differentiation): content on left, split-left layout
-  if (slideIndex === 10) {
+  // Slide 11 (Competitive Differentiation): content on left, split-left layout
+  if (slideIndex === 11) {
     return (
       <div className="w-full max-w-2xl mr-auto ml-6 lg:ml-10 self-start">
         {children}
       </div>
     );
   }
-  // Slide 14 (Human Capital): card pinned to bottom of viewport
-  if (slideIndex === 14) {
+  // Slide 15 (Human Capital): card pinned to bottom of viewport
+  if (slideIndex === 15) {
     return (
       <div className="absolute bottom-0 left-0 right-0 flex justify-center px-4 md:px-6 pb-0">
         <div className="w-full max-w-4xl rounded-t-2xl border-t-2 border-t-emerald-500/80 border-x border-[var(--border)] bg-[var(--card)]/90 backdrop-blur-sm shadow-xl p-4 md:p-5">
@@ -303,16 +327,16 @@ function ContentWrapper({
       </div>
     );
   }
-  // Slide 15 (Why Now?): card on left for legibility; image stays visible on right
-  if (slideIndex === 15) {
+  // Slide 16 (Why Now?): card on left for legibility; image stays visible on right
+  if (slideIndex === 16) {
     return (
       <div className="w-full max-w-xl mr-auto ml-6 lg:ml-10 self-start p-5 md:p-6 rounded-xl border border-[var(--border)] bg-[var(--card)]/95 backdrop-blur-sm shadow-xl">
         {children}
       </div>
     );
   }
-  // Slide 16 (Thank You): centered card so title, tagline and CTAs are always readable
-  if (slideIndex === 16) {
+  // Slide 19 (Thank You): centered card so title, tagline and CTAs are always readable
+  if (slideIndex === 19) {
     return (
       <div className="w-full max-w-md mx-auto p-6 md:p-8 rounded-2xl border border-[var(--border)] bg-[var(--card)]/95 backdrop-blur-sm shadow-xl text-center">
         {children}
@@ -503,101 +527,177 @@ export default function PitchDeckPage() {
     ),
     2: (
       <div className="flex flex-col items-center w-full max-w-4xl mx-auto">
-        <h2 className="text-xl md:text-2xl font-bold text-white mb-6 uppercase tracking-wide [text-shadow:0_2px_12px_rgba(0,0,0,0.9)] text-center">
-          Root and Magnitude of the Issues
+        <h2 className="text-xl md:text-2xl font-bold text-white mb-8 uppercase tracking-wide [text-shadow:0_2px_12px_rgba(0,0,0,0.9)] text-center">
+          Root and Magnitude of the Problem
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
-          <div className="p-5 rounded-2xl bg-black/50 backdrop-blur-md border border-white/15 shadow-xl text-center">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 w-full">
+          <div className="relative overflow-hidden p-6 rounded-2xl bg-black/75 backdrop-blur-xl border border-white/20 shadow-2xl text-center">
+            <div className="absolute left-0 top-0 h-full w-1 bg-emerald-500/80" />
+            <div className="flex justify-center mb-3">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center">
+                <UserCog className="w-5 h-5 text-emerald-300" />
+              </div>
+            </div>
             <p className="font-bold text-white mb-2 text-lg">Managers</p>
-            <p className="text-sm text-gray-200 leading-relaxed">
+            <p className="text-sm text-gray-200 leading-relaxed [text-shadow:0_1px_4px_rgba(0,0,0,0.6)]">
               No unified visibility → Manual follow-up → Wasted time
             </p>
           </div>
-          <div className="p-5 rounded-2xl bg-black/50 backdrop-blur-md border border-white/15 shadow-xl text-center">
+          <div className="relative overflow-hidden p-6 rounded-2xl bg-black/75 backdrop-blur-xl border border-white/20 shadow-2xl text-center">
+            <div className="absolute left-0 top-0 h-full w-1 bg-emerald-500/80" />
+            <div className="flex justify-center mb-3">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center">
+                <Users className="w-5 h-5 text-emerald-300" />
+              </div>
+            </div>
             <p className="font-bold text-white mb-2 text-lg">Staff</p>
-            <p className="text-sm text-gray-200 leading-relaxed">
+            <p className="text-sm text-gray-200 leading-relaxed [text-shadow:0_1px_4px_rgba(0,0,0,0.6)]">
               Poor onboarding → Last-minute changes → High turnover
             </p>
           </div>
-          <div className="p-5 rounded-2xl bg-black/50 backdrop-blur-md border border-white/15 shadow-xl text-center">
+          <div className="relative overflow-hidden p-6 rounded-2xl bg-black/75 backdrop-blur-xl border border-white/20 shadow-2xl text-center">
+            <div className="absolute left-0 top-0 h-full w-1 bg-emerald-500/80" />
+            <div className="flex justify-center mb-3">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center">
+                <Building2 className="w-5 h-5 text-emerald-300" />
+              </div>
+            </div>
             <p className="font-bold text-white mb-2 text-lg">Operations</p>
-            <p className="text-sm text-gray-200 leading-relaxed">
+            <p className="text-sm text-gray-200 leading-relaxed [text-shadow:0_1px_4px_rgba(0,0,0,0.6)]">
               Scattered tools → Reactive decisions → Incidents repeat
             </p>
           </div>
         </div>
-        <p className="mt-6 text-center text-sm text-gray-100 [text-shadow:0_1px_6px_rgba(0,0,0,0.8)]">
-          Global restaurant management software market: <strong className="text-white">USD 5.79B (2024)</strong> →{" "}
-          <strong className="text-white">USD 14.7B by 2030</strong>
-        </p>
+        <div className="mt-8 px-6 py-4 rounded-xl bg-black/70 backdrop-blur-md border border-emerald-500/25 shadow-xl">
+          <p className="text-center text-sm text-gray-100 [text-shadow:0_1px_4px_rgba(0,0,0,0.7)]">
+            Global restaurant management software market:{" "}
+            <strong className="text-emerald-300">USD 5.79B (2024)</strong>
+            <span className="mx-2 text-emerald-400">→</span>
+            <strong className="text-emerald-300">USD 14.7B by 2030</strong>
+            <span className="ml-2 text-xs text-gray-400">(CAGR 16.8%)</span>
+          </p>
+        </div>
       </div>
     ),
     3: (
+      <SlideLayout title="Market Opportunity">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
+          <div className="p-6 rounded-2xl bg-[var(--card)]/95 backdrop-blur-sm border border-emerald-500/20 shadow-sm ring-1 ring-emerald-500/20">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-11 h-11 rounded-xl bg-emerald-500/15 border border-emerald-500/20 flex items-center justify-center">
+                <BarChart3 className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+              </div>
+              <div>
+                <p className="font-bold text-[var(--text-primary)] text-base">TAM</p>
+                <p className="text-xs text-[var(--text-tertiary)]">Total Addressable Market</p>
+              </div>
+            </div>
+            <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">USD 14.7B</p>
+            <p className="text-sm text-[var(--text-secondary)] mt-1">by 2030</p>
+            <p className="text-xs text-[var(--text-tertiary)] mt-2 leading-relaxed">Global restaurant management software (CAGR 16.8%)</p>
+          </div>
+          <div className="p-6 rounded-2xl bg-[var(--card)]/95 backdrop-blur-sm border border-[var(--border)] shadow-sm">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-11 h-11 rounded-xl bg-[var(--surface)] border border-[var(--border)] flex items-center justify-center">
+                <Target className="w-6 h-6 text-[var(--text-primary)]" />
+              </div>
+              <div>
+                <p className="font-bold text-[var(--text-primary)] text-base">SAM</p>
+                <p className="text-xs text-[var(--text-tertiary)]">Serviceable Addressable Market</p>
+              </div>
+            </div>
+            <p className="text-2xl font-bold text-[var(--text-primary)]">MENA + Europe</p>
+            <p className="text-sm text-[var(--text-secondary)] mt-1">SME restaurants</p>
+            <p className="text-xs text-[var(--text-tertiary)] mt-2 leading-relaxed">180K+ restaurants in France, 500K+ across MENA—under-served by current tools</p>
+          </div>
+          <div className="p-6 rounded-2xl bg-[var(--card)]/95 backdrop-blur-sm border border-[var(--border)] shadow-sm">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-11 h-11 rounded-xl bg-[var(--surface)] border border-[var(--border)] flex items-center justify-center">
+                <Building2 className="w-6 h-6 text-[var(--text-primary)]" />
+              </div>
+              <div>
+                <p className="font-bold text-[var(--text-primary)] text-base">SOM</p>
+                <p className="text-xs text-[var(--text-tertiary)]">Serviceable Obtainable Market</p>
+              </div>
+            </div>
+            <p className="text-2xl font-bold text-[var(--text-primary)]">Year 1–3</p>
+            <p className="text-sm text-[var(--text-secondary)] mt-1">Morocco → MENA → Europe</p>
+            <p className="text-xs text-[var(--text-tertiary)] mt-2 leading-relaxed">Pilot in Marrakech, scale via restaurant associations &amp; hospitality networks</p>
+          </div>
+        </div>
+      </SlideLayout>
+    ),
+    4: (
       <SlideLayout title="The Solution">
-        <div className="max-w-3xl">
-          <p className="text-[var(--text-secondary)] mb-6 leading-relaxed">
-            One platform aligning managers, staff, and operations into a structured, intelligent ecosystem.
+        <div className="max-w-2xl">
+          <p className="text-[var(--text-secondary)] mb-6 leading-relaxed text-[15px]">
+            One platform aligning <span className="font-semibold text-[var(--text-primary)]">managers</span>,{" "}
+            <span className="font-semibold text-[var(--text-primary)]">staff</span>, and{" "}
+            <span className="font-semibold text-[var(--text-primary)]">operations</span> into a structured, intelligent ecosystem.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="rounded-xl border border-[var(--border)] bg-[var(--card)]/95 backdrop-blur-sm shadow-sm p-4">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded-lg bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center">
+            <div className="group relative overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)]/60 hover:bg-[var(--surface)]/80 transition-all duration-200 p-4 shadow-sm hover:shadow-md">
+              <div className="absolute left-0 top-0 h-full w-[3px] bg-emerald-500/60 group-hover:bg-emerald-500" />
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-11 h-11 rounded-xl bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center shrink-0">
                   <UserCog className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                 </div>
-                <p className="font-bold text-[var(--text-primary)]">Managers</p>
+                <p className="font-bold text-[var(--text-primary)] text-base">Managers</p>
               </div>
               <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
-                Real-time visibility on schedules, tasks, incidents, and labor costs- AI suggests optimal staff allocation.
+                Real-time visibility on schedules, tasks, incidents, and labor costs — AI suggests optimal staff allocation.
               </p>
             </div>
 
-            <div className="rounded-xl border border-[var(--border)] bg-[var(--card)]/95 backdrop-blur-sm shadow-sm p-4">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded-lg bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center">
+            <div className="group relative overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)]/60 hover:bg-[var(--surface)]/80 transition-all duration-200 p-4 shadow-sm hover:shadow-md">
+              <div className="absolute left-0 top-0 h-full w-[3px] bg-emerald-500/60 group-hover:bg-emerald-500" />
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-11 h-11 rounded-xl bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center shrink-0">
                   <Users className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                 </div>
-                <p className="font-bold text-[var(--text-primary)]">Staff</p>
+                <p className="font-bold text-[var(--text-primary)] text-base">Staff</p>
               </div>
               <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
-                Receive schedules, tasks, and checklists via WhatsApp- no app downloads. Voice notes support illiterate workers.
+                Receive schedules, tasks, and checklists via WhatsApp — no app downloads. Voice notes support illiterate workers.
               </p>
             </div>
 
-            <div className="rounded-xl border border-[var(--border)] bg-[var(--card)]/95 backdrop-blur-sm shadow-sm p-4">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded-lg bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center">
+            <div className="group relative overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)]/60 hover:bg-[var(--surface)]/80 transition-all duration-200 p-4 shadow-sm hover:shadow-md">
+              <div className="absolute left-0 top-0 h-full w-[3px] bg-emerald-500/60 group-hover:bg-emerald-500" />
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-11 h-11 rounded-xl bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center shrink-0">
                   <Building2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                 </div>
-                <p className="font-bold text-[var(--text-primary)]">Restaurants</p>
+                <p className="font-bold text-[var(--text-primary)] text-base">Restaurants</p>
               </div>
               <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
-                Move from manual and reactive to automated and predictive- better retention, lower costs, fewer incidents.
+                Move from manual and reactive to automated and predictive — better retention, lower costs, fewer incidents.
               </p>
             </div>
           </div>
 
-          <div className="mt-5 flex flex-wrap gap-2 text-xs text-[var(--text-secondary)]">
-            <span className="inline-flex items-center rounded-full border border-[var(--border)] bg-[var(--background)]/70 px-3 py-1">
+          <div className="mt-6 flex flex-wrap gap-2">
+            <span className="inline-flex items-center rounded-lg border border-[var(--border)] bg-[var(--background)]/80 px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)]">
               Scheduling
             </span>
-            <span className="inline-flex items-center rounded-full border border-[var(--border)] bg-[var(--background)]/70 px-3 py-1">
+            <span className="inline-flex items-center rounded-lg border border-[var(--border)] bg-[var(--background)]/80 px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)]">
               Tasks & checklists
             </span>
-            <span className="inline-flex items-center rounded-full border border-[var(--border)] bg-[var(--background)]/70 px-3 py-1">
+            <span className="inline-flex items-center rounded-lg border border-[var(--border)] bg-[var(--background)]/80 px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)]">
               Incidents
             </span>
-            <span className="inline-flex items-center rounded-full border border-[var(--border)] bg-[var(--background)]/70 px-3 py-1">
+            <span className="inline-flex items-center rounded-lg border border-[var(--border)] bg-[var(--background)]/80 px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)]">
               Labor cost control
             </span>
-            <span className="inline-flex items-center rounded-full border border-[var(--border)] bg-[var(--background)]/70 px-3 py-1">
+            <span className="inline-flex items-center rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
               WhatsApp delivery
             </span>
           </div>
         </div>
       </SlideLayout>
     ),
-    4: (
+    5: (
       <div className="flex flex-col items-start w-full">
         <div className="w-full rounded-2xl overflow-hidden bg-[var(--card)]/95 backdrop-blur-md border border-[var(--border)] shadow-xl">
           <div className="px-5 pt-5 pb-4 md:px-6 md:pt-6 md:pb-5 border-b border-[var(--border)] border-l-4 border-l-emerald-500">
@@ -653,7 +753,7 @@ export default function PitchDeckPage() {
         </div>
       </div>
     ),
-    5: (
+    6: (
       <div className="flex flex-col items-start w-full">
         <div className="w-full rounded-2xl overflow-hidden bg-black/45 backdrop-blur-md border border-white/15 shadow-2xl">
           <div className="px-5 pt-5 pb-4 md:px-6 md:pt-6 md:pb-5 border-b border-white/10 border-l-4 border-l-emerald-400">
@@ -700,7 +800,7 @@ export default function PitchDeckPage() {
         </div>
       </div>
     ),
-    6: (
+    7: (
       <div className="w-full rounded-2xl overflow-hidden bg-white/95 backdrop-blur-md border border-white/60 shadow-2xl">
         <div className="px-6 pt-6 pb-5 border-b border-slate-200 border-l-4 border-l-emerald-500">
           <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 min-w-0">
@@ -792,7 +892,7 @@ export default function PitchDeckPage() {
         </div>
       </div>
     ),
-    7: (
+    8: (
       <div className="flex flex-col items-start w-full">
         <h2 className="text-xl md:text-2xl font-bold text-white mb-6 uppercase tracking-wide [text-shadow:0_2px_12px_rgba(0,0,0,0.9)]">
           Traction
@@ -822,7 +922,7 @@ export default function PitchDeckPage() {
         </div>
       </div>
     ),
-    8: (
+    9: (
       <SlideLayout title="Go-to-Market Strategy">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
           <div className="p-6 rounded-2xl bg-[var(--card)]/95 backdrop-blur-sm border border-[var(--border)] shadow-sm ring-1 ring-white/5">
@@ -862,7 +962,7 @@ export default function PitchDeckPage() {
         </div>
       </SlideLayout>
     ),
-    9: (
+    10: (
       <div className="flex flex-col items-start w-full">
         <h2 className="text-3xl md:text-4xl font-bold text-white mb-10 uppercase tracking-wide [text-shadow:0_2px_12px_rgba(0,0,0,0.9)]">
           Competitive Landscape
@@ -959,7 +1059,7 @@ export default function PitchDeckPage() {
         </div>
       </div>
     ),
-    10: (
+    11: (
       <div className="flex flex-col items-start w-full">
         <h2 className="text-2xl md:text-3xl font-bold text-white mb-8 uppercase tracking-wide [text-shadow:0_2px_12px_rgba(0,0,0,0.9)]">
           Competitive Differentiation
@@ -1013,7 +1113,7 @@ export default function PitchDeckPage() {
         </div>
       </div>
     ),
-    11: (
+    12: (
       <SlideLayout title="3-Year Financial Forecast">
         <div className="overflow-x-auto">
           <table className="w-full text-xs border-collapse">
@@ -1052,7 +1152,7 @@ export default function PitchDeckPage() {
         </p>
       </SlideLayout>
     ),
-    12: (
+    13: (
       <SlideLayout title="Technology & Integrations">
         <div className="relative aspect-[16/9] w-full rounded-2xl overflow-hidden bg-white/95 border border-white/60 shadow-2xl">
           <ArchitectureDiagram className="absolute inset-0" />
@@ -1062,10 +1162,10 @@ export default function PitchDeckPage() {
         </p>
       </SlideLayout>
     ),
-    13: (
+    14: (
       <SlideLayout title="Funding Ask">
         <div className="text-center mb-6">
-          <p className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">Seeking investment</p>
+          <p className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">Raising €300K–500K</p>
           <p className="text-[var(--text-tertiary)] text-sm mt-2">Pre-seed / Seed round</p>
         </div>
         <div className="grid grid-cols-2 gap-3 text-sm">
@@ -1083,7 +1183,7 @@ export default function PitchDeckPage() {
         </div>
       </SlideLayout>
     ),
-    14: (
+    15: (
       <SlideLayout title="Human Capital">
         <p className="text-xs md:text-sm text-[var(--text-secondary)] text-center mb-3 max-w-xl mx-auto">
           Operator–engineer founding team with deep hospitality roots and a track record of shipping product.
@@ -1119,7 +1219,7 @@ export default function PitchDeckPage() {
         </p>
       </SlideLayout>
     ),
-    15: (
+    16: (
       <SlideLayout title="Why Now?">
         <ul className="space-y-3 text-[15px] text-[var(--text-secondary)]">
           <li><span className="text-[var(--text-primary)] font-medium">Labor shortage & high turnover</span> → need for automation</li>
@@ -1132,7 +1232,63 @@ export default function PitchDeckPage() {
         </ul>
       </SlideLayout>
     ),
-    16: (
+    17: (
+      <SlideLayout title="Our Vision">
+        <div className="max-w-3xl mx-auto space-y-6">
+          <p className="text-lg font-semibold text-[var(--text-primary)] text-center">
+            In 3–5 years, Mizan is the default operations layer for every restaurant in our markets.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-5 rounded-2xl bg-[var(--card)]/95 backdrop-blur-sm border border-emerald-500/20 shadow-sm ring-1 ring-emerald-500/10">
+              <p className="font-bold text-emerald-600 dark:text-emerald-400 mb-2">North Star</p>
+              <p className="text-sm text-[var(--text-secondary)] leading-relaxed">Every manager opens Mizan first—scheduling, incidents, tasks, reports—before touching Excel or WhatsApp.</p>
+            </div>
+            <div className="p-5 rounded-2xl bg-[var(--card)]/95 backdrop-blur-sm border border-[var(--border)] shadow-sm">
+              <p className="font-bold text-[var(--text-primary)] mb-2">Expansion</p>
+              <p className="text-sm text-[var(--text-secondary)] leading-relaxed">Lead in Morocco, scale across MENA via restaurant associations, then Europe for francophone &amp; migrant-worker-heavy markets.</p>
+            </div>
+          </div>
+          <p className="text-center text-sm text-[var(--text-tertiary)] italic">
+            We turn hard restaurant problems into software—one plate at a time.
+          </p>
+        </div>
+      </SlideLayout>
+    ),
+    18: (
+      <SlideLayout title="Social Proof">
+        <div className="space-y-6">
+          <div className="flex flex-wrap justify-center gap-6 md:gap-10 py-4">
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-16 h-16 rounded-2xl bg-emerald-500/15 border border-emerald-500/20 flex items-center justify-center">
+                <Image src="/mizan-logo.svg" alt="Mizan" width={40} height={40} />
+              </div>
+              <span className="text-xs font-medium text-[var(--text-tertiary)]">10+ Restaurants</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-16 h-16 rounded-2xl bg-[var(--surface)] border border-[var(--border)] flex items-center justify-center">
+                <Award className="w-8 h-8 text-emerald-500" />
+              </div>
+              <span className="text-xs font-medium text-[var(--text-tertiary)]">70% time saved</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-16 h-16 rounded-2xl bg-[var(--surface)] border border-[var(--border)] flex items-center justify-center">
+                <Users className="w-8 h-8 text-[var(--text-primary)]" />
+              </div>
+              <span className="text-xs font-medium text-[var(--text-tertiary)]">35% less turnover</span>
+            </div>
+          </div>
+          <blockquote className="relative p-6 rounded-2xl bg-[var(--card)]/95 border border-[var(--border)] border-l-4 border-l-emerald-500">
+            <Quote className="absolute top-4 right-4 w-8 h-8 text-emerald-500/30" />
+            <p className="text-[var(--text-secondary)] text-sm italic leading-relaxed">&ldquo;We have one WhatsApp group per kind of problem&rdquo;</p>
+            <p className="text-xs font-medium text-[var(--text-primary)] mt-2">— Florian Poirson, Restaurant Manager</p>
+          </blockquote>
+          <p className="text-center text-xs text-[var(--text-tertiary)]">
+            Pilot restaurants in Marrakech. VP Restaurant Association of Marrakech. National federation connections.
+          </p>
+        </div>
+      </SlideLayout>
+    ),
+    19: (
       <div className="flex flex-col items-center justify-center min-h-[65vh] text-center px-6">
         <h1 className="text-4xl font-bold text-[var(--text-primary)] mb-4">Thank You</h1>
         <p className="text-emerald-600 dark:text-emerald-400 font-semibold mb-2">Mizan.ai — Manage. Predict. Grow.</p>
