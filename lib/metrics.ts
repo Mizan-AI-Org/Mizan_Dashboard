@@ -1,23 +1,18 @@
+import { cache } from "react";
+import { getDashboardCacheTtlSeconds } from "@/lib/cache-config";
 import {
   type ChecklistCompletionSeriesRow,
   type EscalationSeriesRow,
   type ExecutiveOverviewRow,
-  type GlobalRatesRow,
   type IncidentSeriesRow,
   type LateClockInSeriesRow,
   type RevenueSnapshotRow,
   type TasksPerShiftSeriesRow,
-  fetchChecklistCompletionSeries,
-  fetchEscalationSeries,
-  fetchExecutiveOverview,
-  fetchGlobalRates,
-  fetchIncidentSeries,
-  fetchLateClockInSeries,
-  fetchRevenueSnapshot,
-  fetchTasksPerShiftSeries,
+  EMPTY_EXECUTIVE_OVERVIEW,
+  fetchDashboardQueryBundle,
 } from "@/lib/queries";
 
-export type ExecutiveOverviewMetrics = ExecutiveOverviewRow & GlobalRatesRow;
+export type ExecutiveOverviewMetrics = ExecutiveOverviewRow;
 
 export type RevenueMetrics = RevenueSnapshotRow;
 
@@ -42,68 +37,109 @@ export type DashboardMetrics = {
   revenue: RevenueMetrics | null;
   operational: OperationalMetrics;
   ai: AiUsageMetrics;
+  dbConnected: boolean;
 };
 
-async function fetchExecutiveOverviewMetrics(): Promise<ExecutiveOverviewMetrics> {
-  const [overview, rates] = await Promise.all([
-    fetchExecutiveOverview(),
-    fetchGlobalRates(),
-  ]);
+const AI_USAGE_PLACEHOLDER: AiUsageMetrics = {
+  available: false,
+  totalInteractions: null,
+  avgResponseTimeMs: null,
+  aiSupervisedShiftPercentage: null,
+  autoEscalations: null,
+};
 
+const EMPTY_OPERATIONAL: OperationalMetrics = {
+  checklist: [],
+  lateClockIns: [],
+  incidents: [],
+  escalations: [],
+  tasksPerShift: [],
+};
+
+function mapBundleToMetrics(
+  bundle: Awaited<ReturnType<typeof fetchDashboardQueryBundle>>,
+): DashboardMetrics {
   return {
-    ...overview,
-    ...rates,
+    executive: bundle.executive,
+    revenue: bundle.revenue,
+    operational: {
+      checklist: bundle.checklist,
+      lateClockIns: bundle.lateClockIns,
+      incidents: bundle.incidents,
+      escalations: bundle.escalations,
+      tasksPerShift: bundle.tasksPerShift,
+    },
+    ai: AI_USAGE_PLACEHOLDER,
+    dbConnected: bundle.dbConnected,
   };
 }
 
-async function fetchRevenueMetrics(): Promise<RevenueMetrics | null> {
-  return fetchRevenueSnapshot();
-}
-
-async function fetchOperationalMetrics(): Promise<OperationalMetrics> {
-  const [checklist, lateClockIns, incidents, escalations, tasksPerShift] =
-    await Promise.all([
-      fetchChecklistCompletionSeries(),
-      fetchLateClockInSeries(),
-      fetchIncidentSeries(),
-      fetchEscalationSeries(),
-      fetchTasksPerShiftSeries(),
-    ]);
-
+function emptyDashboardMetrics(): DashboardMetrics {
   return {
-    checklist,
-    lateClockIns,
-    incidents,
-    escalations,
-    tasksPerShift,
+    executive: EMPTY_EXECUTIVE_OVERVIEW,
+    revenue: null,
+    operational: EMPTY_OPERATIONAL,
+    ai: AI_USAGE_PLACEHOLDER,
+    dbConnected: false,
   };
 }
 
-/**
- * AI usage metrics — architecture ready, wired to real tables once they exist.
- */
-async function fetchAiUsageMetrics(): Promise<AiUsageMetrics> {
-  return {
-    available: false,
-    totalInteractions: null,
-    avgResponseTimeMs: null,
-    aiSupervisedShiftPercentage: null,
-    autoEscalations: null,
+type MetricsCacheEntry = {
+  data: DashboardMetrics;
+  expiresAt: number;
+};
+
+declare global {
+  var __dashboardMetricsCache__: MetricsCacheEntry | undefined;
+}
+
+function getMemoryCachedMetrics(): DashboardMetrics | null {
+  const entry = global.__dashboardMetricsCache__;
+  if (!entry || entry.expiresAt <= Date.now()) {
+    return null;
+  }
+  return entry.data;
+}
+
+function setMemoryCachedMetrics(data: DashboardMetrics): void {
+  const ttlSeconds = getDashboardCacheTtlSeconds();
+  if (ttlSeconds <= 0 || !data.dbConnected) {
+    return;
+  }
+
+  global.__dashboardMetricsCache__ = {
+    data,
+    expiresAt: Date.now() + ttlSeconds * 1000,
   };
 }
 
-export async function getDashboardMetrics(): Promise<DashboardMetrics> {
-  const [executive, revenue, operational, ai] = await Promise.all([
-    fetchExecutiveOverviewMetrics(),
-    fetchRevenueMetrics(),
-    fetchOperationalMetrics(),
-    fetchAiUsageMetrics(),
-  ]);
-
-  return {
-    executive,
-    revenue,
-    operational,
-    ai,
-  };
+async function loadDashboardMetrics(): Promise<DashboardMetrics> {
+  try {
+    const bundle = await fetchDashboardQueryBundle();
+    if (!bundle.dbConnected) {
+      return emptyDashboardMetrics();
+    }
+    return mapBundleToMetrics(bundle);
+  } catch (error) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error("[metrics] loadDashboardMetrics failed:", error);
+    }
+    return emptyDashboardMetrics();
+  }
 }
+
+async function loadDashboardMetricsCached(): Promise<DashboardMetrics> {
+  const cached = getMemoryCachedMetrics();
+  if (cached) {
+    return cached;
+  }
+
+  const fresh = await loadDashboardMetrics();
+  if (fresh.dbConnected) {
+    setMemoryCachedMetrics(fresh);
+  }
+  return fresh;
+}
+
+/** Dashboard metrics — per-request dedupe; optional in-memory cache when DB is healthy. */
+export const getDashboardMetrics = cache(loadDashboardMetricsCached);

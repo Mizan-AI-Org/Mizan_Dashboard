@@ -6,8 +6,8 @@ export default function DashboardLoading() {
         <div className="mt-2 h-4 w-72 animate-pulse rounded bg-[var(--skeleton)]" />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-        {Array.from({ length: 6 }).map((_, i) => (
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        {Array.from({ length: 5 }).map((_, i) => (
           <div
             key={i}
             className="relative h-[120px] animate-pulse overflow-hidden rounded-xl border border-[var(--card-border)] bg-[var(--card)]"

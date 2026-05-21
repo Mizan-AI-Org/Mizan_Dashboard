@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useKpiDetail } from "@/components/dashboard/kpi-dashboard-shell";
 import type { RevenueMetrics } from "@/lib/metrics";
 
 interface RevenueChartProps {
@@ -16,10 +17,21 @@ function fmt(n: number) {
 }
 
 export function RevenueChart({ data, loading }: RevenueChartProps) {
+  const { openMetric } = useKpiDetail();
+
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between gap-2">
         <CardTitle>Revenue</CardTitle>
+        {data && !loading && (
+          <button
+            type="button"
+            onClick={() => openMetric("revenue")}
+            className="text-[11px] font-medium text-[var(--text-quaternary)] transition hover:text-[var(--text-secondary)]"
+          >
+            View subscriptions →
+          </button>
+        )}
       </CardHeader>
       <CardContent>
         {loading ? (
@@ -30,14 +42,26 @@ export function RevenueChart({ data, loading }: RevenueChartProps) {
           </div>
         ) : !data ? (
           <div className="flex h-28 items-center justify-center rounded-lg border border-dashed border-[var(--card-border)] text-[13px] text-[var(--text-quaternary)]">
-            Subscription data not connected.
+            Subscription data unavailable.
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-3">
+          <button
+            type="button"
+            onClick={() => openMetric("revenue")}
+            className="grid w-full gap-4 sm:grid-cols-3 text-left transition hover:opacity-90"
+          >
             <Metric label="MRR" value={`$${fmt(data.mrr)}`} accent="emerald" />
-            <Metric label="Active Subscriptions" value={data.active_subscriptions.toString()} accent="sky" />
-            <Metric label="ARPU" value={data.arpu != null ? `$${fmt(data.arpu)}` : "\u2013"} accent="violet" />
-          </div>
+            <Metric
+              label="Active Subscriptions"
+              value={data.active_subscriptions.toString()}
+              accent="sky"
+            />
+            <Metric
+              label="ARPU"
+              value={data.arpu != null ? `$${fmt(data.arpu)}` : "\u2013"}
+              accent="violet"
+            />
+          </button>
         )}
       </CardContent>
     </Card>

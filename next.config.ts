@@ -1,6 +1,14 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import type { NextConfig } from "next";
 
+// Keep module resolution inside mizan-dashboard (avoids parent-repo tailwind/OOM issues).
+const projectRoot = path.dirname(fileURLToPath(import.meta.url));
+
 const nextConfig: NextConfig = {
+  turbopack: {
+    root: projectRoot,
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "logo.clearbit.com", pathname: "/**" },

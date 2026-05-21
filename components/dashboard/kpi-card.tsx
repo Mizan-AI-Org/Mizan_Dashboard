@@ -1,4 +1,8 @@
+"use client";
+
 import { cn } from "@/lib/utils";
+import type { KpiMetricId } from "@/lib/kpi-details";
+import { useKpiDetail } from "@/components/dashboard/kpi-dashboard-shell";
 
 type TrendDirection = "up" | "down" | "flat";
 
@@ -22,6 +26,8 @@ export interface KpiCardProps {
   accent?: AccentColor;
   loading?: boolean;
   className?: string;
+  /** When set, card opens a detail drawer for this metric. */
+  metricId?: KpiMetricId;
 }
 
 function TrendPill({
@@ -59,18 +65,14 @@ export function KpiCard({
   accent = "emerald",
   loading,
   className,
+  metricId,
 }: KpiCardProps) {
   const colors = ACCENT_CLASSES[accent];
+  const { openMetric } = useKpiDetail();
+  const clickable = Boolean(metricId) && !loading;
 
-  return (
-    <div
-      className={cn(
-        "group relative overflow-hidden rounded-xl border border-[var(--card-border)] bg-[var(--card)]",
-        "shadow-[var(--shadow-sm)] transition-all duration-200",
-        "hover:border-[var(--card-border-hover)] hover:bg-[var(--card-hover)] hover:shadow-[var(--shadow-md)]",
-        className,
-      )}
-    >
+  const inner = (
+    <>
       <div className={cn("absolute left-0 top-0 h-full w-[3px]", colors.bar)} />
 
       <div className="py-5 pl-5 pr-4">
@@ -78,7 +80,14 @@ export function KpiCard({
           <span className="text-[11px] font-medium uppercase tracking-wider text-[var(--text-tertiary)]">
             {label}
           </span>
-          <TrendPill direction={trendDirection} value={trendValue ?? undefined} />
+          <div className="flex items-center gap-2">
+            <TrendPill direction={trendDirection} value={trendValue ?? undefined} />
+            {clickable && (
+              <span className="text-[10px] font-medium text-[var(--text-quaternary)] opacity-0 transition group-hover:opacity-100">
+                View →
+              </span>
+            )}
+          </div>
         </div>
 
         <div className="mt-3">
@@ -97,6 +106,37 @@ export function KpiCard({
           </p>
         )}
       </div>
-    </div>
+    </>
+  );
+
+  if (!clickable) {
+    return (
+      <div
+        className={cn(
+          "group relative overflow-hidden rounded-xl border border-[var(--card-border)] bg-[var(--card)]",
+          "shadow-[var(--shadow-sm)]",
+          className,
+        )}
+      >
+        {inner}
+      </div>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={() => openMetric(metricId!)}
+      className={cn(
+        "group relative w-full overflow-hidden rounded-xl border border-[var(--card-border)] bg-[var(--card)] text-left",
+        "shadow-[var(--shadow-sm)] transition-all duration-200",
+        "hover:border-[var(--card-border-hover)] hover:bg-[var(--card-hover)] hover:shadow-[var(--shadow-md)]",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50",
+        "cursor-pointer",
+        className,
+      )}
+    >
+      {inner}
+    </button>
   );
 }
