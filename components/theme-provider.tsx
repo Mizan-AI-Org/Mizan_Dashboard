@@ -4,8 +4,7 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
-  useState,
+  useSyncExternalStore,
 } from "react";
 
 type Theme = "light" | "dark";
@@ -20,8 +19,15 @@ const ThemeContext = createContext<ThemeContextValue>({
   toggle: () => {},
 });
 
-export function useTheme() {
-  return useContext(ThemeContext);
+const listeners = new Set<() => void>();
+
+function subscribe(onStoreChange: () => void) {
+  listeners.add(onStoreChange);
+  return () => listeners.delete(onStoreChange);
+}
+
+function emitChange() {
+  listeners.forEach((listener) => listener());
 }
 
 function getStoredTheme(): Theme {
@@ -30,27 +36,27 @@ function getStoredTheme(): Theme {
   return stored === "dark" ? "dark" : "light";
 }
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("light");
-  const [mounted, setMounted] = useState(false);
+function getSnapshot(): Theme {
+  const theme = getStoredTheme();
+  if (typeof document !== "undefined") {
+    document.documentElement.setAttribute("data-theme", theme);
+  }
+  return theme;
+}
 
-  useEffect(() => {
-    const stored = getStoredTheme();
-    setTheme(stored);
-    document.documentElement.setAttribute("data-theme", stored);
-    setMounted(true);
-  }, []);
+export function useTheme() {
+  return useContext(ThemeContext);
+}
+
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const theme = useSyncExternalStore(subscribe, getSnapshot, (): Theme => "light");
 
   const toggle = useCallback(() => {
-    setTheme((prev) => {
-      const next = prev === "light" ? "dark" : "light";
-      document.documentElement.setAttribute("data-theme", next);
-      localStorage.setItem("mizan-theme", next);
-      return next;
-    });
-  }, []);
-
-  if (!mounted) return null;
+    const next: Theme = theme === "light" ? "dark" : "light";
+    localStorage.setItem("mizan-theme", next);
+    document.documentElement.setAttribute("data-theme", next);
+    emitChange();
+  }, [theme]);
 
   return (
     <ThemeContext.Provider value={{ theme, toggle }}>

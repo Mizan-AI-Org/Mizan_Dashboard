@@ -45,10 +45,17 @@ export function RevenueChart({ data, loading }: RevenueChartProps) {
             Subscription data unavailable.
           </div>
         ) : (
-          <button
-            type="button"
+          <div
+            role="button"
+            tabIndex={0}
             onClick={() => openMetric("revenue")}
-            className="grid w-full gap-4 sm:grid-cols-3 text-left transition hover:opacity-90"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                openMetric("revenue");
+              }
+            }}
+            className="grid w-full cursor-pointer gap-4 sm:grid-cols-3 text-left transition hover:opacity-90"
           >
             <Metric label="MRR" value={`$${fmt(data.mrr)}`} accent="emerald" />
             <Metric
@@ -61,7 +68,7 @@ export function RevenueChart({ data, loading }: RevenueChartProps) {
               value={data.arpu != null ? `$${fmt(data.arpu)}` : "\u2013"}
               accent="violet"
             />
-          </button>
+          </div>
         )}
       </CardContent>
     </Card>
